@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Testhub Doctor</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, "Segoe UI", sans-serif;
+        color: #fff;
+        background: #101820;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --background: #101820;
+        --panel: #192630;
+        --accent: #6dd8d0;
+        --muted: #adc1c9;
+        --success: #78d9a7;
+        --warning: #ffc777;
+        --failure: #ff8e91;
+        --skipped: #8ea3ad;
+      }
+
+      * { box-sizing: border-box; }
+      [hidden] { display: none !important; }
+      body { margin: 0; min-width: 780px; min-height: 600px; }
+      button, input { font: inherit; }
+      button { cursor: pointer; }
+      button:disabled { cursor: default; opacity: .55; }
+      .app { display: flex; flex-direction: column; height: 100vh; min-height: 600px; padding: 24px; gap: 14px; }
+      .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .gematik-mark { display: block; width: auto; height: 38px; object-fit: contain; }
+      .brand { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .03em; }
+      h1 { margin: 4px 0 2px; font-size: 30px; line-height: 1.25; }
+      .subtitle { margin: 0; color: var(--muted); font-size: 15px; }
+      .project { flex: none; padding: 14px 16px; border-radius: 14px; background: var(--panel); }
+      .project-label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 13px; }
+      .project-controls { display: flex; gap: 8px; }
+      .path-input { flex: 1; min-width: 0; height: 38px; padding: 0 10px; color: white; border: 1px solid #36505a; border-radius: 8px; outline: none; background: var(--background); }
+      .path-input:focus { border-color: var(--accent); }
+      .button { min-width: 70px; height: 38px; padding: 0 14px; color: white; border: 1px solid #36505a; border-radius: 8px; background: #253742; font-size: 13px; font-weight: 600; }
+      .button.primary { color: #101820; border-color: transparent; background: var(--accent); }
+      .error { margin: 0; color: var(--failure); font-size: 14px; white-space: pre-wrap; }
+      .summary { display: flex; align-items: center; gap: 8px; min-height: 32px; color: var(--muted); }
+      .summary-text { flex: 1; }
+      .chip { min-width: 54px; height: 32px; padding: 0 10px; border: 0; border-radius: 9px; font-size: 13px; font-weight: 600; }
+      .chip.success { color: var(--success); background: rgb(120 217 167 / 13%); }
+      .chip.warning { color: var(--warning); background: rgb(255 199 119 / 13%); }
+      .chip.failure { color: var(--failure); background: rgb(255 142 145 / 13%); }
+      .chip.skipped { color: var(--skipped); background: rgb(142 163 173 / 13%); }
+      .chip:disabled { opacity: .5; }
+      .results { display: flex; min-height: 0; flex: 1; flex-direction: column; gap: 6px; overflow: auto; padding: 0 2px 8px 0; scroll-behavior: smooth; }
+      .card { flex: none; padding: 12px 16px; border-radius: 12px; background: var(--panel); }
+      .card-head { display: flex; align-items: center; gap: 12px; }
+      .status-icon { font-size: 20px; }
+      .card-labels { flex: 1; min-width: 0; }
+      .card-title { font-size: 15px; font-weight: 600; }
+      .card-meta { margin-top: 2px; color: var(--muted); font-size: 11px; }
+      .severity { font-size: 12px; font-weight: 600; }
+      .detail { margin: 7px 0 0 32px; color: var(--muted); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-wrap; }
+      .remedy-toggle { margin: 5px 0 0 27px; padding: 5px; color: var(--accent); border: 0; background: transparent; font-size: 12px; }
+      .remedy { margin: 4px 0 0 32px; padding: 10px; border-radius: 8px; background: var(--background); }
+      .remedy-title { margin-bottom: 4px; color: var(--accent); font-size: 10px; font-weight: 700; }
+      .remedy-text { font-size: 13px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .app-footer { display: flex; flex: none; justify-content: flex-end; gap: 8px; }
+      .license-button { padding: 5px 8px; color: var(--muted); border: 0; background: transparent; font-size: 12px; }
+      .license-button:hover { color: var(--accent); }
+      #about-dialog { width: min(480px, calc(100vw - 48px)); max-width: none; padding: 0; color: white; border: 1px solid #36505a; border-radius: 12px; background: var(--panel); }
+      #about-dialog::backdrop { background: rgb(0 0 0 / 72%); }
+      .about-content { display: flex; align-items: center; gap: 18px; padding: 24px; }
+      .about-logo { width: 180px; max-width: 40%; height: auto; object-fit: contain; }
+      .about-copy h2 { margin: 0 0 6px; color: var(--accent); }
+      .about-copy p { margin: 4px 0; color: var(--muted); font-size: 13px; }
+      .about-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 0 24px 18px; }
+      #license-dialog { width: min(900px, calc(100vw - 48px)); height: min(700px, calc(100vh - 48px)); max-width: none; max-height: none; padding: 0; color: white; border: 1px solid #36505a; border-radius: 12px; background: var(--panel); }
+      #license-dialog[open] { display: flex; flex-direction: column; }
+      #license-dialog::backdrop { background: rgb(0 0 0 / 72%); }
+      .license-dialog-header { display: flex; flex: none; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #36505a; }
+      .license-dialog-header h2 { flex: 1; margin: 0; font-size: 16px; }
+      .license-close { min-width: 32px; height: 32px; color: white; border: 1px solid #36505a; border-radius: 7px; background: #253742; }
+      .license-frame { width: 100%; min-height: 0; flex: 1; border: 0; background: var(--background); }
+      @media (max-height: 680px) { .app { padding: 18px; gap: 10px; } }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <div class="brand-row">
+          <p class="brand">TESTHUB DOCTOR</p>
+          <img class="gematik-mark" src="gematik_logo_flag_with_background.png" alt="gematik" />
+        </div>
+        <h1>Systemprüfung</h1>
+        <p class="subtitle">Prüfung der Voraussetzungen vor dem Start des Testhubs.</p>
+      </header>
+
+      <section class="project">
+        <label class="project-label" for="project-root">Arbeitsverzeichnis des Testhubs</label>
+        <div class="project-controls">
+          <input id="project-root" class="path-input" type="text" spellcheck="false" />
+          <button id="pick-folder" class="button" type="button">Ordner auswählen</button>
+          <button id="run-checks" class="button primary" type="button" disabled>Prüfung starten</button>
+        </div>
+      </section>
+
+      <p id="error-message" class="error" hidden></p>
+      <section id="summary" class="summary" hidden>
+        <span id="summary-text" class="summary-text"></span>
+        <button class="chip success" data-severity="OK" disabled></button>
+        <button class="chip warning" data-severity="WARN" disabled></button>
+        <button class="chip failure" data-severity="ERROR" disabled></button>
+        <button class="chip skipped" data-severity="SKIPPED" disabled></button>
+      </section>
+
+      <p id="welcome-message" class="subtitle">Bitte Arbeitsverzeichnis auswählen und Prüfung starten.</p>
+      <section id="results" class="results" hidden aria-live="polite"></section>
+      <footer class="app-footer">
+        <button id="show-about" class="license-button" type="button">Über</button>
+        <button id="show-licenses" class="license-button" type="button">Open-Source-Lizenzen</button>
+      </footer>
+    </main>
+
+    <dialog id="about-dialog" aria-labelledby="about-dialog-title">
+      <div class="about-content">
+        <div class="about-copy">
+          <h2 id="about-dialog-title">Testhub Doctor</h2>
+          <p>Prüfung der Voraussetzungen für den TI-2.0-Testhub.</p>
+          <p>Lizenziert unter Apache License 2.0.</p>
+        </div>
+        <img class="about-logo" src="gematik_logo_flag_with_background.png" alt="gematik" />
+      </div>
+      <div class="about-actions">
+        <button id="about-licenses" class="button" type="button">Open-Source-Lizenzen</button>
+        <button id="close-about" class="button" type="button">Schließen</button>
+      </div>
+    </dialog>
+
+    <dialog id="license-dialog" aria-labelledby="license-dialog-title">
+      <div class="license-dialog-header">
+        <h2 id="license-dialog-title">Open-Source-Lizenzen</h2>
+        <button id="close-licenses" class="license-close" type="button" aria-label="Schließen">×</button>
+      </div>
+      <iframe id="license-frame" class="license-frame" src="third_party_licenses.html" title="Drittanbieter-Lizenztexte"></iframe>
+    </dialog>
+
+    <script>
+      const { invoke } = window.__TAURI__.core;
+      const rootInput = document.querySelector("#project-root");
+      const pickButton = document.querySelector("#pick-folder");
+      const runButton = document.querySelector("#run-checks");
+      const errorMessage = document.querySelector("#error-message");
+      const summary = document.querySelector("#summary");
+      const summaryText = document.querySelector("#summary-text");
+      const welcomeMessage = document.querySelector("#welcome-message");
+      const resultsElement = document.querySelector("#results");
+      const aboutDialog = document.querySelector("#about-dialog");
+      const licenseDialog = document.querySelector("#license-dialog");
+      const licenseFrame = document.querySelector("#license-frame");
+      const chips = [...document.querySelectorAll(".chip")];
+      let results = [];
+      let checks = [];
+      let running = false;
+      let completed = false;
+
+      const severityColor = {
+        OK: "var(--success)",
+        WARN: "var(--warning)",
+        ERROR: "var(--failure)",
+        SKIPPED: "var(--skipped)",
+      };
+      const severityIcon = { OK: "✓", WARN: "!", ERROR: "×", SKIPPED: "↷" };
+      const categoryLabels = {
+        JAVA: "Java / Buildwerkzeuge",
+        DOCKER: "Docker",
+        PROJECT: "Projektdateien",
+        SYSTEM: "Systemressourcen",
+        NETWORK: "Netzwerk",
+        WINDOWS: "Windows / WSL",
+      };
+
+      function setError(message = "") {
+        errorMessage.textContent = message;
+        errorMessage.hidden = !message;
+      }
+
+      function renderSummary() {
+        const passed = results.filter((result) => result.severity === "OK").length;
+        const warnings = results.filter((result) => result.severity === "WARN").length;
+        const errors = results.filter((result) => result.severity === "ERROR").length;
+        const skipped = results.filter((result) => result.severity === "SKIPPED").length;
+        summary.hidden = results.length === 0 && !running;
+        summaryText.textContent = running
+          ? `${results.length} von ${checks.length} Prüfungen abgeschlossen`
+          : completed
+            ? `${checks.length} Prüfungen abgeschlossen`
+            : "Prüfung abgebrochen";
+        for (const [severity, count] of [["OK", passed], ["WARN", warnings], ["ERROR", errors], ["SKIPPED", skipped]]) {
+          const chip = chips.find((item) => item.dataset.severity === severity);
+          chip.textContent = severity === "OK" ? `${count} OK` : severity === "WARN" ? `${count} Warnungen` : severity === "ERROR" ? `${count} Fehler` : `${count} übersprungen`;
+          chip.disabled = count === 0;
+        }
+      }
+
+      function appendResult(result) {
+        results.push(result);
+        resultsElement.hidden = false;
+
+        const card = document.createElement("article");
+        card.className = "card";
+        const header = document.createElement("div");
+        header.className = "card-head";
+        const icon = document.createElement("span");
+        icon.className = "status-icon";
+        icon.style.color = severityColor[result.severity];
+        icon.textContent = severityIcon[result.severity];
+        const labels = document.createElement("div");
+        labels.className = "card-labels";
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = result.title;
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        meta.textContent = `${categoryLabels[result.category] ?? result.category} · ${result.id}`;
+        labels.append(title, meta);
+        const severity = document.createElement("span");
+        severity.className = "severity";
+        severity.style.color = severityColor[result.severity];
+        severity.textContent = { OK: "Erfolgreich", WARN: "Warnung", ERROR: "Fehler", SKIPPED: "Übersprungen" }[result.severity];
+        header.append(icon, labels, severity);
+        card.append(header);
+
+        if (result.detail) {
+          const detail = document.createElement("p");
+          detail.className = "detail";
+          detail.textContent = result.detail;
+          card.append(detail);
+        }
+
+        if (result.remediation) {
+          const toggle = document.createElement("button");
+          toggle.className = "remedy-toggle";
+          toggle.type = "button";
+          toggle.textContent = "Problembehebung anzeigen";
+          const remedy = document.createElement("div");
+          remedy.className = "remedy";
+          remedy.hidden = true;
+          const remedyTitle = document.createElement("div");
+          remedyTitle.className = "remedy-title";
+          remedyTitle.textContent = "PROBLEMBEHEBUNG";
+          const remedyText = document.createElement("div");
+          remedyText.className = "remedy-text";
+          remedyText.textContent = result.remediation;
+          remedy.append(remedyTitle, remedyText);
+          toggle.addEventListener("click", () => {
+            remedy.hidden = !remedy.hidden;
+            toggle.textContent = remedy.hidden ? "Problembehebung anzeigen" : "Problembehebung ausblenden";
+          });
+          card.append(toggle, remedy);
+        }
+
+        resultsElement.append(card);
+        renderSummary();
+      }
+
+      async function loadInitialState() {
+        try {
+          const [root, availableChecks] = await Promise.all([
+            invoke("default_project_root"),
+            invoke("list_checks"),
+          ]);
+          rootInput.value = root;
+          checks = availableChecks;
+          runButton.disabled = checks.length === 0;
+        } catch (error) {
+          setError(String(error));
+        }
+      }
+
+      rootInput.addEventListener("input", () => setError());
+      pickButton.addEventListener("click", async () => {
+        try {
+          const path = await invoke("pick_folder", { current: rootInput.value });
+          if (path !== null) {
+            rootInput.value = path;
+            setError();
+          }
+        } catch (error) {
+          setError(String(error));
+        }
+      });
+
+      runButton.addEventListener("click", async () => {
+        if (running) return;
+        let root;
+        try {
+          root = await invoke("validate_project_root", { path: rootInput.value });
+        } catch (error) {
+          setError(String(error));
+          return;
+        }
+
+        rootInput.value = root;
+        setError();
+        results = [];
+        completed = false;
+        running = true;
+        resultsElement.replaceChildren();
+        resultsElement.hidden = false;
+        rootInput.disabled = true;
+        pickButton.disabled = true;
+        runButton.disabled = true;
+        runButton.textContent = "Prüfung läuft …";
+        renderSummary();
+
+        try {
+          for (const check of checks) {
+            const result = await invoke("run_check", { checkId: check.id, projectRoot: root });
+            appendResult(result);
+          }
+          completed = true;
+        } catch (error) {
+          setError(`Prüfung fehlgeschlagen: ${String(error)}`);
+        } finally {
+          running = false;
+          welcomeMessage.hidden = results.length > 0;
+          rootInput.disabled = false;
+          pickButton.disabled = false;
+          runButton.disabled = checks.length === 0;
+          runButton.textContent = "Prüfung starten";
+          renderSummary();
+        }
+      });
+
+      for (const chip of chips) {
+        chip.addEventListener("click", () => {
+          const target = results.find((result) => result.severity === chip.dataset.severity);
+          if (!target) return;
+          const card = [...resultsElement.children].find((item) =>
+            item.querySelector(".card-meta")?.textContent.endsWith(`· ${target.id}`),
+          );
+          card?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+
+      document.querySelector("#show-about").addEventListener("click", () => aboutDialog.showModal());
+      document.querySelector("#close-about").addEventListener("click", () => aboutDialog.close());
+      function showLicenseDialog() {
+        const licenseDocument = licenseFrame.contentDocument;
+        if (licenseDocument) {
+          for (const disclosure of licenseDocument.querySelectorAll("details[open]")) {
+            disclosure.open = false;
+          }
+          licenseFrame.contentWindow.history.replaceState(
+            null,
+            "",
+            licenseFrame.contentWindow.location.pathname,
+          );
+          licenseFrame.contentWindow.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        }
+        licenseDialog.showModal();
+      }
+      document.querySelector("#about-licenses").addEventListener("click", () => {
+        aboutDialog.close();
+        showLicenseDialog();
+      });
+      document.querySelector("#show-licenses").addEventListener("click", showLicenseDialog);
+      document.querySelector("#close-licenses").addEventListener("click", () => licenseDialog.close());
+      licenseDialog.addEventListener("click", (event) => {
+        if (event.target === licenseDialog) licenseDialog.close();
+      });
+
+      loadInitialState();
+    </script>
+  </body>
+</html>
