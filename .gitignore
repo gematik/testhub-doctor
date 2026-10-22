@@ -1,0 +1,11 @@
+.idea/
+.DS_Store
+/target/
+/dist/
+/src-gui/gen/schemas/
+__pycache__/
+*.py[cod]
+
+/.idea/
+jenkinsfiles
+

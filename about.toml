@@ -1,0 +1,10 @@
+# Keep this allowlist aligned with licenses of direct workspace dependencies.
+# New or unknown license identifiers intentionally make report generation fail.
+accepted = [
+    "Apache-2.0",
+    "MIT",
+]
+
+ignore-build-dependencies = false
+ignore-dev-dependencies = true
+ignore-transitive-dependencies = true
