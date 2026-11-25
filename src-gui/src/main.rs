@@ -35,6 +35,11 @@ struct CheckDescriptor {
 }
 
 #[tauri::command]
+fn app_version() -> &'static str {
+    testhub_doctor::APP_VERSION
+}
+
+#[tauri::command]
 fn list_checks() -> Vec<CheckDescriptor> {
     check_ids()
         .into_iter()
@@ -97,6 +102,10 @@ fn normalize_directory(path: &str) -> Result<PathBuf, String> {
     Ok(root)
 }
 
+fn app_context() -> tauri::Context<tauri::Wry> {
+    tauri::generate_context!()
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -107,12 +116,27 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            app_version,
             list_checks,
             default_project_root,
             validate_project_root,
             pick_folder,
             run_check
         ])
-        .run(tauri::generate_context!())
+        .run(app_context())
         .expect("failed to run Testhub Doctor GUI");
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn app_version_matches_cargo_and_tauri_versions() {
+        assert_eq!(super::app_version(), testhub_doctor::APP_VERSION);
+        assert_eq!(super::app_version(), env!("CARGO_PKG_VERSION"));
+        let context = super::app_context();
+        assert_eq!(
+            context.package_info().version.to_string(),
+            super::app_version()
+        );
+    }
 }

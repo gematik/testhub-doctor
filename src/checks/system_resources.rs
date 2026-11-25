@@ -49,19 +49,26 @@ fn free_disk() -> String {
 }
 
 pub(crate) fn check(category: CheckCategory, root: &Path) -> CheckResult {
-    let mut system = System::new();
-    system.refresh_memory();
-    let total_mb = system.total_memory() / (1024 * 1024);
-    let ram_result = if total_mb == 0 {
-        warn(
+    let total_mb = System::new().map(|mut system| {
+        system.refresh_memory();
+        system.total_memory() / (1024 * 1024)
+    });
+    let ram_result = match total_mb {
+        Err(error) => warn(
+            ID,
+            category,
+            TITLE,
+            format!("Der gesamte Arbeitsspeicher kann nicht ermittelt werden: {error}"),
+            None,
+        ),
+        Ok(0) => warn(
             ID,
             category,
             TITLE,
             "Der gesamte Arbeitsspeicher kann auf dieser Plattform nicht ermittelt werden.",
             None,
-        )
-    } else if total_mb < 6 * 1024 {
-        error(
+        ),
+        Ok(total_mb) if total_mb < 6 * 1024 => error(
             ID,
             category,
             TITLE,
@@ -80,9 +87,8 @@ pub(crate) fn check(category: CheckCategory, root: &Path) -> CheckResult {
                 )
                 .into(),
             ),
-        )
-    } else if total_mb < 8 * 1024 {
-        warn(
+        ),
+        Ok(total_mb) if total_mb < 8 * 1024 => warn(
             ID,
             category,
             TITLE,
@@ -103,14 +109,13 @@ pub(crate) fn check(category: CheckCategory, root: &Path) -> CheckResult {
                 )
                 .into(),
             ),
-        )
-    } else {
-        ok(
+        ),
+        Ok(total_mb) => ok(
             ID,
             category,
             TITLE,
             format!("{total_mb} MB Arbeitsspeicher – ausreichend."),
-        )
+        ),
     };
 
     let project_free = free_gb(root);

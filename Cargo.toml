@@ -1,8 +1,8 @@
 [package]
 name = "testhub-doctor"
-version = "1.0.0"
+version.workspace = true
 edition = "2024"
-rust-version = "1.92"
+rust-version = "1.95"
 license = "Apache-2.0"
 description = "Cross-platform prerequisite checks for the TI 2.0 Testhub"
 
@@ -11,13 +11,16 @@ members = ["src-gui"]
 default-members = ["."]
 resolver = "3"
 
+[workspace.package]
+version = "1.0.1"
+
 [dependencies]
-clap = { version = "4.6.7", features = ["derive"] }
-clap_complete = "4.6.3"
+clap = { version = "4.6.10", features = ["derive"] }
+clap_complete = "4.6.12"
 fs2 = "0.4.3"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-sysinfo = { version = "0.38.4", default-features = false, features = ["system"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sysinfo = { version = "0.40.4", default-features = false, features = ["system"] }
 wait-timeout = "0.2.1"
 
 [[bin]]
