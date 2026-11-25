@@ -31,13 +31,17 @@ The application checks:
 
 ## Requirements for building from source
 
-- Rust 1.92 or newer to build from source
+- Rust 1.95 or newer to build from source
 - Tauri GUI build prerequisites: Microsoft C++ Build Tools and WebView2 on Windows; the Linux development packages listed below; Xcode Command Line Tools on macOS
 - No Node.js installation is needed; the Tauri frontend uses plain HTML, CSS, and JavaScript
 
 Java, Maven, Docker, and a Testhub working copy are not required to build the Doctor. To pass the corresponding checks, provide a Java 21+ JDK, Docker, Docker Compose, and a Testhub working copy as described under [Testhub prerequisites](#testhub-prerequisites). Missing prerequisites are reported as findings; they do not prevent the Doctor from running. Neither the CLI nor the GUI needs a Java runtime.
 
 ## Build
+
+The app version is maintained manually in the root `Cargo.toml` under `[workspace.package]`.
+Both the CLI and GUI inherit this version; Tauri also uses the GUI's Cargo version.
+After rebuilding, `testhub-doctor --version` (or `-V`) and the GUI's **Über** dialog display the same app version.
 
 Build the CLI and Tauri GUI on the operating system where you intend to run them:
 
@@ -154,7 +158,9 @@ infra/docker/.env
 infra/docker/backend/zeta/smcb-private/smcb_private.p12
 ```
 
-The `.env` file's `PORT_*` entries are tested by attempting to bind each port on the IPv4 loopback interface. Only plain numeric values are parsed; quoting, variable expansion, inline comments, and environment overrides are not evaluated. The check does not test UDP, IPv6, or container-side ports. The certificate check verifies existence and nonzero size, not certificate validity or its password.
+The `.env` file's `PORT_*` entries are tested by attempting to bind each port on the IPv4 loopback interface. Only plain numeric values are parsed; quoting, variable expansion, inline comments, and environment overrides are not evaluated. The check does not test UDP, IPv6, or container-side ports.
+
+The certificate check requires a regular, nonempty file and verifies readability by opening it and reading one byte. Symlinks to suitable files are accepted. Missing, empty, unreadable, or non-regular files (including directories), as well as metadata errors, produce an error. This is only a file-presence check: it does not validate the PKCS#12 format, password, private key, certificate validity period, trust chain, or revocation status.
 
 Network connectivity is tested by DNS resolution and a direct TCP connection to `ghcr.io:443`, not by TLS, authentication, or an image pull. The presence of `HTTPS_PROXY`, `https_proxy`, `HTTP_PROXY`, or `http_proxy` changes a failed probe from an error to a warning; it does not tunnel the Doctor's TCP probe through the proxy or verify Docker's proxy configuration.
 

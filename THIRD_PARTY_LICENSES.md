@@ -15,17 +15,17 @@ Counts can overlap: a package declaring alternatives such as `MIT OR Apache-2.0`
 
 | Package | Version | Declared license |
 | --- | --- | --- |
-| `clap` | `4.6.7` | `MIT OR Apache-2.0` |
-| `clap_complete` | `4.6.11` | `MIT OR Apache-2.0` |
+| `clap` | `4.6.10` | `MIT OR Apache-2.0` |
+| `clap_complete` | `4.6.12` | `MIT OR Apache-2.0` |
 | `fs2` | `0.4.3` | `MIT OR Apache-2.0` |
-| `rfd` | `0.17.2` | `MIT` |
+| `rfd` | `0.18.0` | `MIT` |
 | `serde` | `1.0.229` | `MIT OR Apache-2.0` |
 | `serde_json` | `1.0.154` | `MIT OR Apache-2.0` |
-| `sysinfo` | `0.38.4` | `MIT` |
-| `tauri` | `2.12.3` | `Apache-2.0 OR MIT` |
-| `tauri-build` | `2.7.2` | `Apache-2.0 OR MIT` |
-| `testhub-doctor` | `1.0.0` | `Apache-2.0` |
-| `testhub-doctor-gui` | `1.0.0` | `Apache-2.0` |
+| `sysinfo` | `0.40.4` | `MIT` |
+| `tauri` | `2.12.7` | `Apache-2.0 OR MIT` |
+| `tauri-build` | `2.7.6` | `Apache-2.0 OR MIT` |
+| `testhub-doctor` | `1.0.1` | `Apache-2.0` |
+| `testhub-doctor-gui` | `1.0.1` | `Apache-2.0` |
 | `wait-timeout` | `0.2.1` | `MIT OR Apache-2.0` |
 
 ## License texts and attributions
@@ -38,10 +38,10 @@ Packages:
 - `fs2` 0.4.3 — declared license: `MIT OR Apache-2.0`
 - `serde` 1.0.229 — declared license: `MIT OR Apache-2.0`
 - `serde_json` 1.0.154 — declared license: `MIT OR Apache-2.0`
-- `tauri` 2.12.3 — declared license: `Apache-2.0 OR MIT`
-- `tauri-build` 2.7.2 — declared license: `Apache-2.0 OR MIT`
-- `testhub-doctor` 1.0.0 — declared license: `Apache-2.0`
-- `testhub-doctor-gui` 1.0.0 — declared license: `Apache-2.0`
+- `tauri` 2.12.7 — declared license: `Apache-2.0 OR MIT`
+- `tauri-build` 2.7.6 — declared license: `Apache-2.0 OR MIT`
+- `testhub-doctor` 1.0.1 — declared license: `Apache-2.0`
+- `testhub-doctor-gui` 1.0.1 — declared license: `Apache-2.0`
 - `wait-timeout` 0.2.1 — declared license: `MIT OR Apache-2.0`
 
 <pre>
@@ -251,8 +251,8 @@ Apache License
 ### Apache License 2.0 (`Apache-2.0`) — text variant 2
 
 Packages:
-- `clap` 4.6.7 — declared license: `MIT OR Apache-2.0`
-- `clap_complete` 4.6.11 — declared license: `MIT OR Apache-2.0`
+- `clap` 4.6.10 — declared license: `MIT OR Apache-2.0`
+- `clap_complete` 4.6.12 — declared license: `MIT OR Apache-2.0`
 
 <pre>
 Apache License
@@ -461,11 +461,11 @@ Apache License
 ### MIT License (`MIT`) — text variant 1
 
 Packages:
-- `rfd` 0.17.2 — declared license: `MIT`
+- `rfd` 0.18.0 — declared license: `MIT`
 
 Copyright notices:
-- `rfd` 0.17.2: Copyright (c) 2020 Bilal Elmoussaoui
-- `rfd` 0.17.2: Copyright (c) 2022 Bartłomiej Maryńczak
+- `rfd` 0.18.0: Copyright (c) 2020 Bilal Elmoussaoui
+- `rfd` 0.18.0: Copyright (c) 2022 Bartłomiej Maryńczak
 
 <pre>
 MIT License
@@ -493,10 +493,10 @@ SOFTWARE.
 ### MIT License (`MIT`) — text variant 2
 
 Packages:
-- `sysinfo` 0.38.4 — declared license: `MIT`
+- `sysinfo` 0.40.4 — declared license: `MIT`
 
 Copyright notices:
-- `sysinfo` 0.38.4: Copyright (c) 2015 Guillaume Gomez
+- `sysinfo` 0.40.4: Copyright (c) 2015 Guillaume Gomez
 
 <pre>
 The MIT License (MIT)

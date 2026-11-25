@@ -125,7 +125,8 @@
       <div class="about-content">
         <div class="about-copy">
           <h2 id="about-dialog-title">Testhub Doctor</h2>
-          <p>Prüfung der Voraussetzungen für den TI-2.0-Testhub.</p>
+          <p id="app-version"></p>
+          <p>Prüfung der Voraussetzungen für den <br>TI-2.0-Testhub.</p>
           <p>Lizenziert unter Apache License 2.0.</p>
         </div>
         <img class="about-logo" src="gematik_logo_flag_with_background.png" alt="gematik" />
@@ -343,7 +344,15 @@
         });
       }
 
-      document.querySelector("#show-about").addEventListener("click", () => aboutDialog.showModal());
+      document.querySelector("#show-about").addEventListener("click", async () => {
+        try {
+          const version = await invoke("app_version");
+          document.querySelector("#app-version").textContent = `Version ${version}`;
+          aboutDialog.showModal();
+        } catch (error) {
+          setError(`App-Version konnte nicht geladen werden: ${error}`);
+        }
+      });
       document.querySelector("#close-about").addEventListener("click", () => aboutDialog.close());
       function showLicenseDialog() {
         const licenseDocument = licenseFrame.contentDocument;

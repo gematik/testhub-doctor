@@ -32,7 +32,7 @@ use testhub_doctor::{CheckCategory, CheckResult, Severity, check_ids, check_info
 #[derive(Debug, Parser)]
 #[command(
     name = "testhub-doctor",
-    version,
+    version = testhub_doctor::APP_VERSION,
     about = "Prüft die Voraussetzungen zum Erstellen und Ausführen des TI-2.0-Testhub-Stacks.",
     flatten_help = true,
     after_help = "Ohne Unterbefehl werden alle Prüfungen im aktuellen Projektverzeichnis ausgeführt.\n\
@@ -428,6 +428,25 @@ mod tests {
     use clap::{CommandFactory, Parser, error::ErrorKind};
     use std::path::PathBuf;
     use testhub_doctor::{CheckCategory, CheckResult, Severity};
+
+    #[test]
+    fn version_flags_display_app_version_without_validating_project_root() {
+        for flag in ["--version", "-V"] {
+            let error = Cli::try_parse_from([
+                "testhub-doctor",
+                "--project-root",
+                "/nonexistent/testhub-doctor-version-test",
+                flag,
+            ])
+            .unwrap_err();
+            assert_eq!(error.kind(), ErrorKind::DisplayVersion);
+            assert_eq!(
+                error.to_string(),
+                format!("testhub-doctor {}\n", testhub_doctor::APP_VERSION)
+            );
+            assert!(!error.use_stderr());
+        }
+    }
 
     #[test]
     fn main_help_includes_check_options_and_example() {

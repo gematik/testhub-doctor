@@ -30,6 +30,8 @@ mod results;
 use serde::Serialize;
 use std::path::Path;
 
+pub const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub enum Severity {
     #[serde(rename = "OK")]
